@@ -10,7 +10,7 @@
 MSASL/train/
 MSASL/val/
 MSASL/test/
-data/*
+data
 __pycache__/
 
 # User-specific stuff
