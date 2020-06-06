@@ -5,18 +5,18 @@ import numpy as np
 
 
 def save_optical_flow():
-    create_dir("././" + MSASL_FLOW_PATH)
+    create_dir(MSASL_FLOW_PATH)
 
     for subset in ["train", "val", "test"]:
-        root, directories, files = next(os.walk("././" + MSASL_RGB_PATH + "/" + subset))
-        create_dir("././" + MSASL_FLOW_PATH + "/" + subset)
+        root, directories, files = next(os.walk(MSASL_RGB_PATH + "/" + subset))
+        create_dir(MSASL_FLOW_PATH + "/" + subset)
 
         for directory in directories:
             if directory == 'org':
                 break
-            create_dir("././" + MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
-            minimal_flow("././" + MSASL_RGB_PATH + "/" + subset + "/" + directory + "/",
-                         "././" + MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
+            create_dir(MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
+            minimal_flow(MSASL_RGB_PATH + "/" + subset + "/" + directory + "/",
+                         MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
 
 
 def minimal_flow(rgb_dir, flow_dir):

@@ -6,10 +6,10 @@ import cv2
 
 
 def download_dataset():
-    create_dir("././" + MSASL_RGB_PATH)
-    save_videos("train", "././" + TRAIN_JSON_PATH)
-    save_videos("val", "././" + VAL_JSON_PATH)
-    save_videos("test", "././" + TEST_JSON_PATH)
+    create_dir(MSASL_RGB_PATH)
+    save_videos("train", TRAIN_JSON_PATH)
+    save_videos("val", VAL_JSON_PATH)
+    save_videos("test", TEST_JSON_PATH)
 
 
 def save_frames(file_name, dir_name, file_count=0):
@@ -27,7 +27,7 @@ def save_frames(file_name, dir_name, file_count=0):
 
 
 def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
-    create_dir("././" + MSASL_RGB_PATH + "/" + folder_name)        # create train, val or test directory
+    create_dir(MSASL_RGB_PATH + "/" + folder_name)        # create train, val or test directory
     file = open(json_name, )
     data = json.load(file)
 
@@ -37,8 +37,8 @@ def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
 
         if cur_row["clean_text"] in CLASSES:
 
-            dir_name = "././" + MSASL_RGB_PATH + "/" + folder_name + "/" + str(video_id)
-            file_name = "././" + MSASL_RGB_PATH + "/" + folder_name + '/%s_%d.mp4' % (DATASET_NAME, video_id)
+            dir_name = MSASL_RGB_PATH + "/" + folder_name + "/" + str(video_id)
+            file_name = MSASL_RGB_PATH + "/" + folder_name + '/%s_%d.mp4' % (DATASET_NAME, video_id)
 
             create_dir(dir_name)       # create video subdir
 
@@ -47,7 +47,7 @@ def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
             end_time = cur_row["end_time"]
 
             ydl_opts = {
-                'outtmpl': "././" + MSASL_RGB_PATH + "/" + folder_name + '/org/%s_%d' % (DATASET_NAME, video_id) + ".%(ext)s",
+                'outtmpl': MSASL_RGB_PATH + "/" + folder_name + '/org/%s_%d' % (DATASET_NAME, video_id) + ".%(ext)s",
                 'format': 'bestvideo[ext=mp4]', "merge_output_format": 'mp4', 'ignoreerrors': True}
 
             # download video
@@ -56,7 +56,7 @@ def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
 
             # crop video
             subprocess.call(['ffmpeg', '-y', '-i',
-                             "././" + MSASL_RGB_PATH + "/" + folder_name + '/org/%s_%d' % (DATASET_NAME, video_id) + ".mp4",
+                             MSASL_RGB_PATH + "/" + folder_name + '/org/%s_%d' % (DATASET_NAME, video_id) + ".mp4",
                              '-ss', str(start_time), '-t', str(end_time - start_time), file_name])
 
             # open video
@@ -74,5 +74,5 @@ def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
             video_id += 1
 
     file.close()
-    with open("././" + MSASL_RGB_PATH + "/%s_%s_rgb.json" % (DATASET_NAME, folder_name), "w") as outfile:
+    with open(MSASL_RGB_PATH + "/%s_%s_rgb.json" % (DATASET_NAME, folder_name), "w") as outfile:
         json.dump(json_data, outfile)
