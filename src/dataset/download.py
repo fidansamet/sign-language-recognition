@@ -47,10 +47,11 @@ def save_frames(file_name, dir_name, file_count=0):
     return h, w
 
 
-def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
+def save_videos(folder_name, json_name, video_id=0):
     cfg.create_dir(cfg.MSASL_RGB_PATH + "/" + folder_name)        # create train, val or test directory
     file = open(json_name, )
     data = json.load(file)
+    json_data = []
 
     for i in data:
         cur_str = json.dumps(i)
