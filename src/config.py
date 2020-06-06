@@ -1,11 +1,13 @@
 import os
 
 DATASET_NAME ="MSASL"
+RESIZED_NAME ="MSASL_resized"
 MSASL_RGB_PATH = "data/MSASL/rgb"
+RESIZED_RGB_PATH = "data/MSASL_resized/rgb"
 MSASL_FLOW_PATH = "data/MSASL/flow"
-TRAIN_JSON_PATH = "data/MSASL/MSASL_train.json"
-VAL_JSON_PATH = "data/MSASL/MSASL_val.json"
-TEST_JSON_PATH = "data/MSASL/MSASL_test.json"
+TRAIN_JSON_PATH = "../data/MSASL/MSASL_train.json"
+VAL_JSON_PATH = "../data/MSASL/MSASL_val.json"
+TEST_JSON_PATH = "../data/MSASL/MSASL_test.json"
 CLASSES = ["hello", "nice", "teacher", "eat", "no", "happy", "like", "orange", "want", "deaf"]
 
 MIN_RESIZE = 256
