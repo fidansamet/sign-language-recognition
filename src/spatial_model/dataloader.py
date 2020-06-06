@@ -4,6 +4,8 @@ from PIL import Image
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 import numpy as np
+import sys
+sys.path.insert(0,'..')
 import config as cfg
 
 

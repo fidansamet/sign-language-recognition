@@ -2,9 +2,9 @@ import os
 
 DATASET_NAME ="MSASL"
 RESIZED_NAME ="MSASL_resized"
-MSASL_RGB_PATH = "data/MSASL/rgb"
-RESIZED_RGB_PATH = "data/MSASL_resized/rgb"
-MSASL_FLOW_PATH = "data/MSASL/flow"
+MSASL_RGB_PATH = "../data/MSASL/rgb"
+RESIZED_RGB_PATH = "../data/MSASL_resized/rgb"
+MSASL_FLOW_PATH = "../data/MSASL/flow"
 TRAIN_JSON_PATH = "../data/MSASL/MSASL_train.json"
 VAL_JSON_PATH = "../data/MSASL/MSASL_val.json"
 TEST_JSON_PATH = "../data/MSASL/MSASL_test.json"
@@ -17,8 +17,8 @@ MIN_RESIZE = 256
 IM_RESIZE = 256
 IM_CROP = 224
 
-LEARNING_RATE = 1e-5    #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.
-BATCH_SIZE = 1          #   her seferde kac adet resmi isleyecek model. eger train i calistirirken memory hatasi alirsaniz bunu azaltmaniz lazim.
+LEARNING_RATE = 1e-3    #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.
+BATCH_SIZE = 64          #   her seferde kac adet resmi isleyecek model. eger train i calistirirken memory hatasi alirsaniz bunu azaltmaniz lazim.
 EPOCH_COUNT = 200       #     tum veri kumesi uzerinden kac kez gecilecek. baktiniz loss cok dusmemeye basladiysa 40-50 epoch sonra train i durdurabilirsiniz.
 
 SAVE_PERIOD_IN_EPOCHS = 5  # kac epoch da save edilecek model.

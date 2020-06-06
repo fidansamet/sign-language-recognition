@@ -1,5 +1,7 @@
-from spatial_model.model import *
-from spatial_model.dataloader import get_loader
+import sys
+sys.path.insert(0,'..')
+from model import *
+from dataloader import get_loader
 import config as cfg
 from torchvision import transforms
 from torch.autograd import Variable
@@ -25,8 +27,8 @@ def to_var_labels(x, volatile=False):
 
 def train():
 
-    train_json_path = cfg.MSASL_RGB_PATH + "/%s_train_rgb.json" % (cfg.DATASET_NAME)
-    train_path = cfg.MSASL_RGB_PATH + "/train"
+    train_json_path = "../" + cfg.MSASL_RGB_PATH + "/%s_train_rgb.json" % (cfg.DATASET_NAME)
+    train_path = "../" + cfg.MSASL_RGB_PATH + "/train"
 
     # load json
     with open(train_json_path) as f:
