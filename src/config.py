@@ -18,7 +18,7 @@ MIN_RESIZE = 256
 IM_RESIZE = 256
 IM_CROP = 224
 
-LEARNING_RATE = 1e-3    #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.
+LEARNING_RATE = 1e-4    #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.
 BATCH_SIZE = 64          #   her seferde kac adet resmi isleyecek model. eger train i calistirirken memory hatasi alirsaniz bunu azaltmaniz lazim.
 EPOCH_COUNT = 200       #     tum veri kumesi uzerinden kac kez gecilecek. baktiniz loss cok dusmemeye basladiysa 40-50 epoch sonra train i durdurabilirsiniz.
 
