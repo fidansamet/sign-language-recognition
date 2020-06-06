@@ -11,7 +11,6 @@ import collections
 import numpy as np
 
 
-
 def to_var(x, volatile=False):
     if torch.cuda.is_available():
         x = x.cuda().float()
@@ -25,8 +24,8 @@ def to_var_labels(x, volatile=False):
 
 def train():
 
-    train_json_path = "../../" + cfg.MSASL_RGB_PATH + "/%s_train_rgb.json" % (cfg.DATASET_NAME)
-    train_path = "../../" + cfg.MSASL_RGB_PATH + "/train"
+    train_json_path = cfg.MSASL_RGB_PATH + "/%s_train_rgb.json" % (cfg.DATASET_NAME)
+    train_path = cfg.MSASL_RGB_PATH + "/train"
 
     # load json
     with open(train_json_path) as f:
