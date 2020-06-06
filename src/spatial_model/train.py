@@ -16,6 +16,7 @@ def to_var(x, volatile=False):
         x = x.cuda().float()
     return Variable(x, volatile=volatile)
 
+
 def to_var_labels(x, volatile=False):
     if torch.cuda.is_available():
         x = x.cuda().long()

@@ -8,6 +8,7 @@ VAL_JSON_PATH = "data/MSASL/MSASL_val.json"
 TEST_JSON_PATH = "data/MSASL/MSASL_test.json"
 CLASSES = ["hello", "nice", "teacher", "eat", "no", "happy", "like", "orange", "want", "deaf"]
 
+MIN_RESIZE = 256
 
 ''' TRAIN PARAMS '''
 

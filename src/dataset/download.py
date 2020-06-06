@@ -12,18 +12,38 @@ def download_dataset():
     save_videos("test", cfg.TEST_JSON_PATH)
 
 
+def resize_frame(frame):
+    h, w, _ = frame.shape
+    if h < w:
+        resize_ratio = round(cfg.MIN_RESIZE / h, 2)
+        h = cfg.MIN_RESIZE
+        w = w * resize_ratio
+    else:
+        resize_ratio = round(cfg.MIN_RESIZE / w, 2)
+        w = cfg.MIN_RESIZE
+        h = h * resize_ratio
+
+    return int(h), int(w)
+
+
 def save_frames(file_name, dir_name, file_count=0):
     video = cv2.VideoCapture(file_name)
+    h, w = 0, 0
 
     while video.isOpened():
         ret, frame = video.read()
         if not ret:
             break
-        cv2.imwrite(dir_name + '/' + str(file_count) + '.png', frame)
+
+        if file_count == 0:
+            h, w = resize_frame(frame)
+
+        cv2.imwrite(dir_name + '/' + str(file_count) + '.png', frame.resize((h, w), refcheck=False))
         file_count += 1
 
     video.release()
     cv2.destroyAllWindows()
+    return h, w
 
 
 def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
@@ -60,15 +80,15 @@ def save_videos(folder_name, json_name, video_id= 0, json_data=[]):
                              '-ss', str(start_time), '-t', str(end_time - start_time), file_name])
 
             # open video
-            save_frames(file_name, dir_name)
+            h, w = save_frames(file_name, dir_name)
 
             # save json
             json_data.append({
                 "videoId": '%d' % video_id,
                 "cleanText": cur_row["clean_text"],
                 "label": cur_row["label"],
-                "width": cur_row["width"],
-                "height": cur_row["height"]
+                "width": w,
+                "height": h
             })
 
             video_id += 1
