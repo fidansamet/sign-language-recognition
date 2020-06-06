@@ -29,6 +29,7 @@ def train():
 
     train_json_path = "../" + cfg.MSASL_RGB_PATH + "/%s_train_rgb.json" % (cfg.DATASET_NAME)
     train_path = "../" + cfg.MSASL_RGB_PATH + "/train"
+    cfg.create_dir(cfg.TRAIN_MODEL_PATH)
 
     # load json
     with open(train_json_path) as f:
@@ -47,18 +48,14 @@ def train():
             image_path_list.append(os.path.join(video_path, video_file))
             image_label_list.append(video_label)
 
-    # print(train_json)
-
     # open loss info
     today = datetime.datetime.now()
-    # loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_' + str(today) + '.txt', 'w')
+    loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_' + str(today) + '.txt', 'w')
 
     transform = transforms.Compose([
         transforms.Resize((cfg.IM_RESIZE, cfg.IM_RESIZE)),
         transforms.RandomCrop(cfg.IM_CROP),
-        # transforms.RandomChoice(augmentations),
         transforms.RandomHorizontalFlip(),
-        # transforms.RandomVerticalFlip(),
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5),
                              (0.5, 0.5, 0.5))
@@ -80,7 +77,6 @@ def train():
 
 
     criterion = nn.CrossEntropyLoss()
-
     optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(spatial_model.parameters())),
                                  lr=cfg.LEARNING_RATE)
 
@@ -111,15 +107,14 @@ def train():
                       % (epoch, cfg.EPOCH_COUNT, i, total_step,
                          loss.data, np.mean(loss_hist)))  #
 
-                # loss_info.write('Epoch [%d/%d], Step [%d/%d], Loss: %.7f, Running Loss: %5.6f \n'
-                #                 % (epoch, cfg.EPOCH_COUNT, i, total_step,
-                #                    loss.data, np.mean(loss_hist)))
+                loss_info.write('Epoch [%d/%d], Step [%d/%d], Loss: %.7f, Running Loss: %5.6f \n'
+                                % (epoch, cfg.EPOCH_COUNT, i, total_step,
+                                   loss.data, np.mean(loss_hist)))
 
-        # # Save the models
-        # if epoch % cfg.SAVE_PERIOD_IN_EPOCHS == 0:
-        #     torch.save(dream_model.state_dict(),
-        #                os.path.join(cfg.TRAIN_MODEL_PATH,
-        #                             'dream_model-%d.pkl' % epoch))
-
+        # Save the models
+        if epoch % cfg.SAVE_PERIOD_IN_EPOCHS == 0:
+            torch.save(spatial_model.state_dict(),
+                       os.path.join(cfg.TRAIN_MODEL_PATH,
+                                    'spatial_model-%d.pkl' % epoch))
 
 train()
