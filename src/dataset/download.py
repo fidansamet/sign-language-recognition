@@ -38,7 +38,8 @@ def save_frames(file_name, dir_name, file_count=0):
         if file_count == 0:
             h, w = resize_frame(frame)
 
-        cv2.imwrite(dir_name + '/' + str(file_count) + '.png', frame.resize((h, w), refcheck=False))
+        resized_image = cv2.resize(frame.copy(), (w, h))
+        cv2.imwrite(dir_name + '/' + str(file_count) + '.png', resized_image)
         file_count += 1
 
     video.release()
