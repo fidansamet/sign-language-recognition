@@ -1,0 +1,90 @@
+import torch
+import torch.utils.data as data
+from PIL import Image
+from PIL import ImageFile
+import numpy as np
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+
+'''Spatial Model'''
+class SpatialDataset(data.Dataset):
+
+    def __init__(self, img_name_list, img_label_list, transform=None):
+        self.img_name_list = img_name_list
+        self.img_label_list = img_label_list
+        self.transform = transform
+
+    def __getitem__(self, index):
+        # returns one data pair (image and label)
+        try:
+            img = Image.open(self.img_name_list[index])
+            img = img.convert('RGB')
+
+            if self.transform is not None:
+                img = self.transform(img)
+
+            img_label = self.img_label_list[index]
+
+        except Exception as e:
+            print("Image I/O error!", e)
+            pass
+
+        return img, img_label
+
+    def __len__(self):
+        return len(self.img_name_list)
+
+
+def get_spatial_loader(img_name_list, img_label_list, batch_size, shuffle, transform, num_workers):
+    dataset = SpatialDataset(img_name_list=img_name_list,
+                             img_label_list=img_label_list,
+                             transform=transform)
+
+    # returns (images, labels) for every iteration
+    data_loader = torch.utils.data.DataLoader(dataset=dataset,
+                                              batch_size=batch_size,
+                                              shuffle=shuffle,
+                                              num_workers=num_workers)
+    return data_loader
+
+
+'''Temporal Model'''
+class TemporalDataset(data.Dataset):
+
+    def __init__(self, flow_name_list, flow_label_list, transform=None):
+        self.flow_name_list = flow_name_list
+        self.flow_label_list = flow_label_list
+        self.transform = transform
+
+    def __getitem__(self, index):
+        # returns one data pair (image and label)
+        try:
+            optical_flow = []
+            for i in range(index, index + 10):
+                cur_flow = np.load(self.flow_name_list[index])
+                # concatenate row-wise
+                np.concatenate(optical_flow, cur_flow)
+
+            flow_label = self.flow_label_list[index]
+
+        except Exception as e:
+            print("npz I/O error!", e)
+            pass
+
+        return optical_flow, flow_label
+
+    def __len__(self):
+        return len(self.flow_name_list)
+
+
+def get_temporal_loader(flow_name_list, flow_label_list, batch_size, shuffle, transform, num_workers):
+    dataset = TemporalDataset(flow_name_list=flow_name_list,
+                              flow_label_list=flow_label_list,
+                              transform=transform)
+
+    # returns (flows, labels) for every iteration
+    data_loader = torch.utils.data.DataLoader(dataset=dataset,
+                                              batch_size=batch_size,
+                                              shuffle=shuffle,
+                                              num_workers=num_workers)
+    return data_loader

@@ -1,7 +1,9 @@
-import config as cfg
 import cv2
 import os
 import numpy as np
+import sys
+sys.path.insert(0,'..')
+import config as cfg
 
 
 def save_optical_flow():

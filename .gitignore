@@ -12,6 +12,7 @@ MSASL/val/
 MSASL/test/
 data
 __pycache__/
+src/model/*
 
 # User-specific stuff
 .idea/**/workspace.xml
