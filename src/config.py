@@ -13,7 +13,8 @@ CLASSES = ["hello", "nice", "teacher", "eat", "no", "happy", "like", "orange", "
 MIN_RESIZE = 256
 
 ''' TRAIN PARAMS '''
-IN_CHANNEL = 20
+SPATIAL_IN_CHANNEL = 3
+TEMPORAL_IN_CHANNEL = 20
 IM_RESIZE = 256
 IM_CROP = 224
 LEARNING_RATE = 2.5e-4    #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.

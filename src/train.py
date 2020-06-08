@@ -47,11 +47,11 @@ def to_var_labels(x, volatile=False):
     return Variable(x, volatile=volatile)
 
 
-def load_dataset(set_name):
+def load_dataset(set_name, model_name):
     json_path = cfg.MSASL_RGB_PATH + "/%s_%s_rgb.json" % (cfg.DATASET_NAME, set_name)
     set_path = cfg.MSASL_FLOW_PATH + "/%s" % (set_name)
     cfg.create_dir(cfg.TRAIN_MODEL_PATH)
-    img_path_list, img_label_list = [], []
+    path_list, label_list = [], []
 
     # load json
     with open(json_path) as f:
@@ -65,15 +65,18 @@ def load_dataset(set_name):
         video_files = os.listdir(video_path)
 
         for i, video_file in enumerate(video_files):
-            video_number = video_file.split('.')[0]
-            if int(video_number) < len(video_files) - 10:
-                img_path_list.append(os.path.join(video_path, video_file))
-                img_label_list.append(video_label)
-            # if (i % 5) == 0:
-            #     img_path_list.append(os.path.join(video_path, video_file))
-            #     img_label_list.append(video_label)
+            if model_name == 'spatial':
+                if (i % 5) == 0:
+                    path_list.append(os.path.join(video_path, video_file))
+                    label_list.append(video_label)
 
-    return img_path_list, img_label_list
+            elif model_name == 'temporal':
+                video_number = video_file.split('.')[0]
+                if int(video_number) < len(video_files) - 10:
+                    path_list.append(os.path.join(video_path, video_file))
+                    label_list.append(video_label)
+
+    return path_list, label_list
 
 
 def get_data_loaders(model_name, train_path_list, train_label_list, val_path_list, val_label_list):
@@ -83,35 +86,40 @@ def get_data_loaders(model_name, train_path_list, train_label_list, val_path_lis
                                                transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
         data_loader_val = get_spatial_loader(val_path_list, val_label_list, 1, shuffle=False,
                                              transform=VAL_TRANSFORM, num_workers=1)
+        model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES))
 
     elif model_name == 'temporal':
         data_loader_train = get_temporal_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
                                                 transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
         data_loader_val = get_temporal_loader(val_path_list, val_label_list, 1, shuffle=False,
                                               transform=VAL_TRANSFORM, num_workers=1)
+        model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES))
 
     elif model_name == 'late_fusion':
         data_loader_train = get_late_fusion_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
                                                 transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
         data_loader_val = get_late_fusion_loader(val_path_list, val_label_list, 1, shuffle=False,
                                               transform=VAL_TRANSFORM, num_workers=1)
+        model = FusedModel()
 
     elif model_name == 'early_fusion':
         data_loader_train = get_late_fusion_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
                                                 transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
         data_loader_val = get_late_fusion_loader(val_path_list, val_label_list, 1, shuffle=False,
                                               transform=VAL_TRANSFORM, num_workers=1)
+        model = FusedModel()
+
     else:
         print("Please enter oen of the followings to run: spatial, temporal, late_fusion, early_fusion")
         sys.exit()
 
-    return data_loader_train, data_loader_val
+    return model, data_loader_train, data_loader_val
 
 
 def train(model_name):
     # load dataset
-    train_path_list, train_label_list = load_dataset('train')
-    val_path_list, val_label_list = load_dataset('val')
+    train_path_list, train_label_list = load_dataset('train', model_name)
+    val_path_list, val_label_list = load_dataset('val', model_name)
 
     # open loss files
     today = datetime.datetime.now()
@@ -119,17 +127,14 @@ def train(model_name):
     val_loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_val_' + str(today) + '.txt', 'w')
 
     # get dataloaders
-    data_loader_train, data_loader_val = get_data_loaders(model_name, train_path_list, train_label_list, val_path_list, val_label_list)
-
-    # create model
-    spatial_model = BaseModel(cfg.IN_CHANNEL, len(cfg.CLASSES))
+    model, data_loader_train, data_loader_val = get_data_loaders(model_name, train_path_list, train_label_list, val_path_list, val_label_list)
 
     # use GPU if available.
     if torch.cuda.is_available():
-        spatial_model.cuda()
+        model.cuda()
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(spatial_model.parameters())), lr=cfg.LEARNING_RATE)
+    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(model.parameters())), lr=cfg.LEARNING_RATE)
 
     loss_hist = collections.deque(maxlen=500)
 
@@ -142,9 +147,9 @@ def train(model_name):
             # Set mini-batch ground truth
             labels = to_var_labels(labels, volatile=False)
             # Forward, Backward and Optimize
-            spatial_model.zero_grad()
+            model.zero_grad()
             # feed images to CNN model
-            predicted_labels = spatial_model(images)
+            predicted_labels = model(images)
 
             loss = criterion(predicted_labels, labels)
             loss.backward()
@@ -165,12 +170,12 @@ def train(model_name):
         # Save the models
         if epoch % cfg.SAVE_PERIOD_IN_EPOCHS == 0:
             # run test on val set
-            test_acc, test_loss, ground_truths, test_results = test(spatial_model, data_loader_val, criterion, set_name='val')
+            test_acc, test_loss, ground_truths, test_results = test(model, data_loader_val, criterion, set_name='val')
             val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f, Val Accuracy: %.3f \n'
                                 % (epoch, cfg.EPOCH_COUNT, i, total_step,
                                    test_loss, test_acc))
 
-            torch.save(spatial_model.state_dict(),
+            torch.save(model.state_dict(),
                        os.path.join(cfg.TRAIN_MODEL_PATH,
                                     'spatial_model-%d.pkl' % epoch))
 
@@ -256,14 +261,14 @@ def run_test():
 
 if __name__ == '__main__':
     # build dataset
-    #download_dataset()
+    # download_dataset()
     # save_optical_flow()
 
-    model = sys.argv[0]
+    model_name = sys.argv[0]
     set = sys.argv[1]
 
     if set == 'train':
-        train(model)
+        train(model_name)
     else:
-        run_test(model)
+        run_test(model_name)
 

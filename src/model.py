@@ -1,5 +1,6 @@
 from torch import nn
 import torchvision.models as models
+import config as cfg
 
 class BaseModel(nn.Module):
 
@@ -92,6 +93,9 @@ class BaseModel(nn.Module):
         out = self.classifier(out)
         return out
 
-# class FusedModel():
-#     self.spatial_model = BaseModel()
-#     self.temporal_model = BaseModel()
+
+class FusedModel(nn.Module):
+    def __init__(self):
+        super(FusedModel, self).__init__()
+        self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES))
+        self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES))
