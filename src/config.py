@@ -8,11 +8,12 @@ MSASL_FLOW_PATH = "../data/MSASL/flow"
 TRAIN_JSON_PATH = "../data/MSASL/MSASL_train.json"
 VAL_JSON_PATH = "../data/MSASL/MSASL_val.json"
 TEST_JSON_PATH = "../data/MSASL/MSASL_test.json"
-TRAIN_MODEL_PATH = "model/4"
+TRAIN_MODEL_PATH = "model/temporal_1"
 CLASSES = ["hello", "nice", "teacher", "eat", "no", "happy", "like", "orange", "want", "deaf"]
 MIN_RESIZE = 256
 
 ''' TRAIN PARAMS '''
+IN_CHANNEL = 20
 IM_RESIZE = 256
 IM_CROP = 224
 LEARNING_RATE = 2.5e-4    #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.

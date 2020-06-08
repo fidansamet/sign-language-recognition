@@ -41,13 +41,14 @@ class BaseModel(nn.Module):
         self.conv_net = nn.Sequential(*layers_conv)
 
         self.classifier = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 4096),
+            # nn.Linear(512 * 7 * 7, 4096),
+            nn.Linear(32768, 4096),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, 4096),
+            nn.Linear(4096, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(4096, out_classes),
+            nn.Linear(2048, out_classes),
         )
 
         # layers_fc = []

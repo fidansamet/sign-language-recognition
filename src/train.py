@@ -1,7 +1,8 @@
 import sys
 sys.path.insert(0,'..')
 from model import *
-from dataloader import get_spatial_loader
+from dataloader import get_spatial_loader, get_temporal_loader, get_late_fusion_loader, get_early_fusion_loader
+from dataset.compute_flow import save_optical_flow
 import config as cfg
 from torchvision import transforms
 import torch.nn.functional as F
@@ -48,7 +49,7 @@ def to_var_labels(x, volatile=False):
 
 def load_dataset(set_name):
     json_path = cfg.MSASL_RGB_PATH + "/%s_%s_rgb.json" % (cfg.DATASET_NAME, set_name)
-    set_path = cfg.MSASL_RGB_PATH + "/%s" % (set_name)
+    set_path = cfg.MSASL_FLOW_PATH + "/%s" % (set_name)
     cfg.create_dir(cfg.TRAIN_MODEL_PATH)
     img_path_list, img_label_list = [], []
 
@@ -64,29 +65,64 @@ def load_dataset(set_name):
         video_files = os.listdir(video_path)
 
         for i, video_file in enumerate(video_files):
-            if (i % 5) == 0:
+            video_number = video_file.split('.')[0]
+            if int(video_number) < len(video_files) - 10:
                 img_path_list.append(os.path.join(video_path, video_file))
                 img_label_list.append(video_label)
+            # if (i % 5) == 0:
+            #     img_path_list.append(os.path.join(video_path, video_file))
+            #     img_label_list.append(video_label)
 
     return img_path_list, img_label_list
 
 
-def train():
+def get_data_loaders(model_name, train_path_list, train_label_list, val_path_list, val_label_list):
+    # build data loader
+    if model_name == 'spatial':
+        data_loader_train = get_spatial_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
+                                               transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
+        data_loader_val = get_spatial_loader(val_path_list, val_label_list, 1, shuffle=False,
+                                             transform=VAL_TRANSFORM, num_workers=1)
+
+    elif model_name == 'temporal':
+        data_loader_train = get_temporal_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
+                                                transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
+        data_loader_val = get_temporal_loader(val_path_list, val_label_list, 1, shuffle=False,
+                                              transform=VAL_TRANSFORM, num_workers=1)
+
+    elif model_name == 'late_fusion':
+        data_loader_train = get_late_fusion_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
+                                                transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
+        data_loader_val = get_late_fusion_loader(val_path_list, val_label_list, 1, shuffle=False,
+                                              transform=VAL_TRANSFORM, num_workers=1)
+
+    elif model_name == 'early_fusion':
+        data_loader_train = get_late_fusion_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
+                                                transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
+        data_loader_val = get_late_fusion_loader(val_path_list, val_label_list, 1, shuffle=False,
+                                              transform=VAL_TRANSFORM, num_workers=1)
+    else:
+        print("Please enter oen of the followings to run: spatial, temporal, late_fusion, early_fusion")
+        sys.exit()
+
+    return data_loader_train, data_loader_val
+
+
+def train(model_name):
     # load dataset
-    train_img_path_list, train_img_label_list = load_dataset('train')
-    val_img_path_list, val_img_label_list = load_dataset('val')
+    train_path_list, train_label_list = load_dataset('train')
+    val_path_list, val_label_list = load_dataset('val')
 
     # open loss files
     today = datetime.datetime.now()
     train_loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_train_' + str(today) + '.txt', 'w')
     val_loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_val_' + str(today) + '.txt', 'w')
 
-    # build data loader
-    data_loader_train = get_spatial_loader(train_img_path_list, train_img_label_list, cfg.BATCH_SIZE, shuffle=True, transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
-    data_loader_val = get_spatial_loader(val_img_path_list, val_img_label_list, 1, shuffle=False, transform=VAL_TRANSFORM, num_workers=1)
+    # get dataloaders
+    data_loader_train, data_loader_val = get_data_loaders(model_name, train_path_list, train_label_list, val_path_list, val_label_list)
 
     # create model
-    spatial_model = BaseModel(3, len(cfg.CLASSES))
+    spatial_model = BaseModel(cfg.IN_CHANNEL, len(cfg.CLASSES))
 
     # use GPU if available.
     if torch.cuda.is_available():
@@ -208,7 +244,8 @@ def run_test():
     set_name = 'test'
     image_path_list_test, image_label_list_test = load_dataset(set_name)
     # build val data loader
-    data_loader_test = get_spatial_loader(image_path_list_test, image_label_list_test, 1, shuffle=False, transform=VAL_TRANSFORM, num_workers=1)
+    # data_loader_test = get_spatial_loader(image_path_list_test, image_label_list_test, 1, shuffle=False, transform=VAL_TRANSFORM, num_workers=1)
+    data_loader_test = get_temporal_loader(image_path_list_test, image_label_list_test, 1, shuffle=False, transform=VAL_TRANSFORM, num_workers=1)
 
     base_model = load_model(10)
     criterion = nn.CrossEntropyLoss()
@@ -216,5 +253,17 @@ def run_test():
     test(base_model, data_loader_test, criterion, set_name=set_name)
 
 
-#train()
-run_test()
+
+if __name__ == '__main__':
+    # build dataset
+    #download_dataset()
+    # save_optical_flow()
+
+    model = sys.argv[0]
+    set = sys.argv[1]
+
+    if set == 'train':
+        train(model)
+    else:
+        run_test(model)
+
