@@ -28,9 +28,9 @@ if __name__ == '__main__':
 
     elif model_name in ["late_fusion", "early_fusion"]:
         if set == "train":
-            fused.train(model_name)
+            fused.train()
         elif set == "test":
-            fused.run_test(model_name)
+            fused.run_test()
         else:
             print("Please enter one of the followings to run: train, test")
             sys.exit()

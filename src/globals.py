@@ -70,6 +70,35 @@ def load_dataset(set_name, model_name):
     return path_list, label_list
 
 
+def load_fused_dataset(set_name):
+    json_path = cfg.MSASL_RGB_PATH + "/%s_%s_rgb.json" % (cfg.DATASET_NAME, set_name)
+    img_set_path = cfg.MSASL_RGB_PATH + "/%s" % (set_name)
+    flow_set_path = cfg.MSASL_FLOW_PATH + "/%s" % (set_name)
+    create_dir(cfg.TRAIN_MODEL_PATH)
+    img_path_list, flow_path_list, label_list = [], [], []
+
+    # load json
+    with open(json_path) as f:
+        train_json = json.load(f)
+
+    # traverse dataset list
+    for vid in train_json:
+        video_id = vid["videoId"]
+        video_label = vid["label"]
+        frame_path = os.path.join(img_set_path, video_id)
+        flow_path = os.path.join(flow_set_path, video_id)
+        video_files = os.listdir(flow_path)
+
+        for i, video_file in enumerate(video_files):
+            video_number = video_file.split('.')[0]
+            if int(video_number) < len(video_files) - 10:
+                img_path_list.append(os.path.join(frame_path, video_file))
+                flow_path_list.append(os.path.join(flow_path, video_file))
+                label_list.append(video_label)
+
+    return img_path_list, flow_path_list, label_list
+
+
 # TODO
 def load_model(epoch):
     # Build models
