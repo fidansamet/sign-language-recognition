@@ -1,22 +1,21 @@
 import cv2
 import os
 import numpy as np
-import sys
-sys.path.insert(0,'..')
 import config as cfg
+from globals import create_dir
 
 
 def save_optical_flow():
-    cfg.create_dir(cfg.MSASL_FLOW_PATH)
+    create_dir(cfg.MSASL_FLOW_PATH)
 
     for subset in ["train", "val", "test"]:
         root, directories, files = next(os.walk(cfg.MSASL_RGB_PATH + "/" + subset))
-        cfg.create_dir(cfg.MSASL_FLOW_PATH + "/" + subset)
+        create_dir(cfg.MSASL_FLOW_PATH + "/" + subset)
 
         for directory in directories:
             if directory == 'org':
                 break
-            cfg.create_dir(cfg.MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
+            create_dir(cfg.MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
             minimal_flow(cfg.MSASL_RGB_PATH + "/" + subset + "/" + directory + "/",
                          cfg.MSASL_FLOW_PATH + "/" + subset + "/" + directory + "/")
 

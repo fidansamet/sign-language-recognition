@@ -1,5 +1,3 @@
-import os
-
 DATASET_NAME ="MSASL"
 RESIZED_NAME ="MSASL_resized"
 MSASL_RGB_PATH = "../data/MSASL/rgb"
@@ -25,12 +23,3 @@ LOG_STEP = 10  # kac adimda ekrana log bilgisi basilacak.
 NUM_WORKERS = 8  # data loader icin worker sayisi, core sayiniz az ise bunu azaltabilirsiniz.
 LOAD_TRAINED_MODEL = 0  # train asamasinda eski bir model yuklemek isterseniz bunu 1 yapin.
 LOAD_MODEL_NAME = "base_model-100.pkl" # LOAD_TRAINED_MODEL 1 olursa load edilecek model adi.
-
-
-def create_dir(path):
-    try:
-        os.mkdir(path)
-    except OSError:
-        print("Creation of the directory %s failed" % path)
-    else:
-        print("Successfully created the directory %s " % path)

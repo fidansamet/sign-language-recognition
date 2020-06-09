@@ -1,3 +1,4 @@
+from globals import create_dir
 import json
 import youtube_dl
 import config as cfg
@@ -6,7 +7,7 @@ import cv2
 
 
 def download_dataset():
-    cfg.create_dir(cfg.MSASL_RGB_PATH)
+    create_dir(cfg.MSASL_RGB_PATH)
     save_videos("train", cfg.TRAIN_JSON_PATH)
     save_videos("val", cfg.VAL_JSON_PATH)
     save_videos("test", cfg.TEST_JSON_PATH)
@@ -48,7 +49,7 @@ def save_frames(file_name, dir_name, file_count=0):
 
 
 def save_videos(folder_name, json_name, video_id=0):
-    cfg.create_dir(cfg.MSASL_RGB_PATH + "/" + folder_name)        # create train, val or test directory
+    create_dir(cfg.MSASL_RGB_PATH + "/" + folder_name)        # create train, val or test directory
     file = open(json_name, )
     data = json.load(file)
     json_data = []
@@ -62,7 +63,7 @@ def save_videos(folder_name, json_name, video_id=0):
             dir_name = cfg.MSASL_RGB_PATH + "/" + folder_name + "/" + str(video_id)
             file_name = cfg.MSASL_RGB_PATH + "/" + folder_name + '/%s_%d.mp4' % (cfg.DATASET_NAME, video_id)
 
-            cfg.create_dir(dir_name)       # create video subdir
+            create_dir(dir_name)       # create video subdir
 
             print(cur_row["url"])
             start_time = cur_row["start_time"]
