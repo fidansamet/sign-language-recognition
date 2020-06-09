@@ -68,15 +68,13 @@ def train(model_name):
             s_imgs, s_labels = to_var(s_imgs, volatile=True), to_var_labels(s_labels, volatile=False)
             t_arrs, t_labels = to_var(t_arrs, volatile=True), to_var_labels(t_labels, volatile=False)
 
-            # TODO
             # zero the parameter gradients
-            s_optimizer.zero_grad()
-            t_optimizer.zero_grad()
+            # s_optimizer.zero_grad()
+            # t_optimizer.zero_grad()
 
             # Forward, Backward and Optimize
             model.spatial_model.zero_grad()
             model.temporal_model.zero_grad()
-            # TODO
 
             # feed images to CNN model
             s_predicted_labels = model.spatial_model(s_imgs)
@@ -146,14 +144,16 @@ def test(model, s_loader, t_loader, criterion):
             s_outputs = F.softmax(s_predicted_labels)
             t_outputs = F.softmax(t_predicted_labels)
 
-            s_loss = criterion(s_outputs, s_labels)
-            t_loss = criterion(t_outputs, t_labels)
+            outputs = (s_outputs + t_outputs) / 2.0
 
-            combined_loss = s_loss + t_loss
-            test_loss += combined_loss.cpu().data.numpy()   # sum up batch loss
+            # s_loss = criterion(s_outputs, s_labels)
+            # t_loss = criterion(t_outputs, t_labels)
 
-            s_pred = s_outputs.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-            t_pred = t_outputs.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            # combined_loss = s_loss + t_loss
+            # test_loss += combined_loss.cpu().data.numpy()   # sum up batch loss
+
+            pred = outputs.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            # t_pred = t_outputs.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
 
             correct += pred.eq(labels.view_as(pred)).sum().item()       # TODO
 
@@ -164,7 +164,7 @@ def test(model, s_loader, t_loader, criterion):
                 t_test_results.append(j[0])
 
 
-    test_loss /= len(s_loader)
+    # test_loss /= len(s_loader)
     test_acc = 100. * correct / len(s_loader)
     print(test_acc)
 
@@ -182,7 +182,7 @@ def test(model, s_loader, t_loader, criterion):
     print(cls_report)
     print(conf_mat)
 
-    return test_acc, test_loss
+    return test_acc
 
 
 def run_test(model_name):
