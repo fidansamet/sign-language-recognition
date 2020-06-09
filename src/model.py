@@ -4,7 +4,7 @@ import config as cfg
 
 class BaseModel(nn.Module):
 
-    def __init__(self, in_channels, out_classes):
+    def __init__(self, in_channels, out_classes, flatten_size):
         super(BaseModel, self).__init__()
 
         layers_conv = []
@@ -43,7 +43,8 @@ class BaseModel(nn.Module):
 
         self.classifier = nn.Sequential(
             # nn.Linear(512 * 7 * 7, 4096),
-            nn.Linear(32768, 4096),
+            # nn.Linear(32768, 4096),
+            nn.Linear(flatten_size, 4096),
             nn.ReLU(True),
             nn.Dropout(),
             nn.Linear(4096, 2048),
@@ -97,5 +98,5 @@ class BaseModel(nn.Module):
 class FusedModel(nn.Module):
     def __init__(self):
         super(FusedModel, self).__init__()
-        self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES))
-        self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES))
+        self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088)
+        self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768)

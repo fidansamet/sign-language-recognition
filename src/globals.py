@@ -92,7 +92,7 @@ def load_fused_dataset(set_name):
         for i, video_file in enumerate(video_files):
             video_number = video_file.split('.')[0]
             if int(video_number) < len(video_files) - 10:
-                img_path_list.append(os.path.join(frame_path, video_file))
+                img_path_list.append(os.path.join(frame_path, str(video_number) + ".png"))
                 flow_path_list.append(os.path.join(flow_path, video_file))
                 label_list.append(video_label)
 
