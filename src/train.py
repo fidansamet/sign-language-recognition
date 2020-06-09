@@ -1,8 +1,7 @@
 import sys
 sys.path.insert(0,'..')
 from model import *
-from dataloader import get_spatial_loader, get_temporal_loader, get_late_fusion_loader, get_early_fusion_loader
-from dataset.compute_flow import save_optical_flow
+from dataloader import get_spatial_loader, get_temporal_loader, get_late_fusion_loader
 import config as cfg
 from torchvision import transforms
 import torch.nn.functional as F
@@ -199,7 +198,7 @@ def test(model, validation_loader, criterion, set_name='val'):
                 ground_truths.append(ii)
 
             outputs = model(images)
-            softmaxx = F.softmax(outputs)
+            outputs = F.softmax(outputs)
             #test_loss += F.nll_loss(outputs, labels).item()  # sum up batch loss
             # test_loss += F.binary_cross_entropy(outputs, labels, reduction='sum').item()  # sum up batch loss
             loss = criterion(outputs, labels)
@@ -232,7 +231,7 @@ def test(model, validation_loader, criterion, set_name='val'):
 
 def load_model(epoch):
     # Build models
-    base_model = BaseModel(3, len(cfg.CLASSES)).eval()  # eval mode (batchnorm uses moving mean/variance)
+    base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES)).eval()  # eval mode (batchnorm uses moving mean/variance)
 
     # use GPU if available.
     if torch.cuda.is_available():
@@ -244,18 +243,40 @@ def load_model(epoch):
     return base_model
 
 
-def run_test():
+def run_test(model_name):
 
     set_name = 'test'
-    image_path_list_test, image_label_list_test = load_dataset(set_name)
-    # build val data loader
-    # data_loader_test = get_spatial_loader(image_path_list_test, image_label_list_test, 1, shuffle=False, transform=VAL_TRANSFORM, num_workers=1)
-    data_loader_test = get_temporal_loader(image_path_list_test, image_label_list_test, 1, shuffle=False, transform=VAL_TRANSFORM, num_workers=1)
+    test_path_list, test_label_list = load_dataset(set_name, model_name)
 
-    base_model = load_model(10)
+    # build data loader
+    if model_name == 'spatial':
+        data_loader_test = get_spatial_loader(test_path_list, test_label_list, 1, shuffle=False,
+                                               transform=VAL_TRANSFORM, num_workers=1)
+        model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES))
+
+    elif model_name == 'temporal':
+        data_loader_test = get_temporal_loader(test_path_list, test_label_list, 1, shuffle=False,
+                                                transform=VAL_TRANSFORM, num_workers=1)
+        model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES))
+
+    elif model_name == 'late_fusion':
+        data_loader_test = get_late_fusion_loader(test_path_list, test_label_list, 1, shuffle=False,
+                                                   transform=VAL_TRANSFORM, num_workers=1)
+        model = FusedModel()
+
+    elif model_name == 'early_fusion':
+        data_loader_test = get_late_fusion_loader(test_path_list, test_label_list, 1, shuffle=False,
+                                                   transform=VAL_TRANSFORM, num_workers=1)
+        model = FusedModel()
+
+    else:
+        print("Please enter oen of the followings to run: spatial, temporal, late_fusion, early_fusion")
+        sys.exit()
+
+    model = load_model(90)
     criterion = nn.CrossEntropyLoss()
 
-    test(base_model, data_loader_test, criterion, set_name=set_name)
+    test(model, data_loader_test, criterion, set_name=set_name)
 
 
 
@@ -264,11 +285,10 @@ if __name__ == '__main__':
     # download_dataset()
     # save_optical_flow()
 
-    model_name = sys.argv[0]
-    set = sys.argv[1]
+    model_name = sys.argv[1]
+    set = sys.argv[2]
 
     if set == 'train':
         train(model_name)
     else:
         run_test(model_name)
-
