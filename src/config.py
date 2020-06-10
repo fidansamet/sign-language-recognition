@@ -6,7 +6,7 @@ MSASL_FLOW_PATH = "../data/MSASL/flow"
 TRAIN_JSON_PATH = "../data/MSASL/MSASL_train.json"
 VAL_JSON_PATH = "../data/MSASL/MSASL_val.json"
 TEST_JSON_PATH = "../data/MSASL/MSASL_test.json"
-TRAIN_MODEL_PATH = "model/late_fusion_1"
+TRAIN_MODEL_PATH = "model/early_fusion_1"
 CLASSES = ["hello", "nice", "teacher", "eat", "no", "happy", "like", "orange", "want", "deaf"]
 MIN_RESIZE = 256
 
@@ -23,3 +23,6 @@ LOG_STEP = 10  # kac adimda ekrana log bilgisi basilacak.
 NUM_WORKERS = 8  # data loader icin worker sayisi, core sayiniz az ise bunu azaltabilirsiniz.
 LOAD_TRAINED_MODEL = 0  # train asamasinda eski bir model yuklemek isterseniz bunu 1 yapin.
 LOAD_MODEL_NAME = "base_model-100.pkl" # LOAD_TRAINED_MODEL 1 olursa load edilecek model adi.
+
+LATE = 1
+EARLY = 0
