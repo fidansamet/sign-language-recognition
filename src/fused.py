@@ -1,5 +1,5 @@
 from model import *
-from globals import TRAIN_TRANSFORM, VAL_TRANSFORM, load_fused_dataset, to_var, to_var_labels, load_model
+from globals import TRAIN_TRANSFORM, VAL_TRANSFORM, load_fused_dataset, to_var, to_var_labels, load_fusion_model
 from dataloader import get_fused_loader
 import torch.nn.functional as F
 import config as cfg
@@ -273,7 +273,7 @@ def run_test(model_name):
     data_loader = get_fused_loader(img_path_list, flow_path_list, label_list, 1, shuffle=False,
                                    transform=VAL_TRANSFORM, num_workers=1)
 
-    model = load_model(90)
+    model = load_fusion_model(model_name, 100)
 
     if model_name == 'late_fusion':
         late_fusion_test(model, data_loader)
