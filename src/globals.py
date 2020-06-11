@@ -39,7 +39,12 @@ def to_var_labels(x, volatile=False):
 
 def load_dataset(set_name, model_name):
     json_path = cfg.MSASL_RGB_PATH + "/%s_%s_rgb.json" % (cfg.DATASET_NAME, set_name)
-    set_path = cfg.MSASL_RGB_PATH + "/%s" % (set_name)
+
+    if model_name == 'spatial':
+        set_path = cfg.MSASL_RGB_PATH + "/%s" % (set_name)
+    else:
+        set_path = cfg.MSASL_FLOW_PATH + "/%s" % (set_name)
+
     create_dir(cfg.TRAIN_MODEL_PATH)
     path_list, label_list = [], []
 
@@ -60,8 +65,7 @@ def load_dataset(set_name, model_name):
                     path_list.append(os.path.join(video_path, video_file))
                     label_list.append(video_label)
 
-# TODO
-            elif model_name == 'temporal':
+            else:
                 video_number = video_file.split('.')[0]
                 if int(video_number) < len(video_files) - 10:
                     path_list.append(os.path.join(video_path, video_file))

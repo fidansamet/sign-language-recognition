@@ -1,8 +1,6 @@
 from torch import nn
-import torchvision.models as models
 import config as cfg
 import torch
-import os
 
 
 class BaseModel(nn.Module):
@@ -46,43 +44,31 @@ class BaseModel(nn.Module):
 
         if fuse_early:
             self.classifier = nn.Sequential(
-                # nn.Linear(512 * 7 * 7, 4096),
-                # nn.Linear(32768, 4096),
+                # BLOCK 6
                 nn.Linear(flatten_size, 4096),
                 nn.ReLU(True),
                 nn.Dropout(),
+
+                # BLOCK 7
                 nn.Linear(4096, 2048),
                 nn.ReLU(True),
                 nn.Dropout(),
             )
         else:
             self.classifier = nn.Sequential(
-                # nn.Linear(512 * 7 * 7, 4096),
-                # nn.Linear(32768, 4096),
+                # BLOCK 6
                 nn.Linear(flatten_size, 4096),
                 nn.ReLU(True),
                 nn.Dropout(),
+
+                # BLOCK 7
                 nn.Linear(4096, 2048),
                 nn.ReLU(True),
                 nn.Dropout(),
+
+                # BLOCK 8
                 nn.Linear(2048, out_classes),
             )
-
-        # layers_fc = []
-        #
-        # # BLOCK 6
-        # layers_fc.append(nn.Linear(25088, 4096))
-        # layers_fc.append(nn.Dropout2d(0.5))
-        #
-        # # BLOCK 7
-        # layers_fc.append(nn.Linear(4096, 2048))
-        # layers_fc.append(nn.Dropout2d(0.5))
-        #
-        # # BLOCK 8
-        # layers_fc.append(nn.Linear(2048, out_features=out_classes))
-        # # layers_fc.append(nn.Softmax())
-        #
-        # self.fc_net = nn.Sequential(*layers_fc)
 
         # init weights
         self._initialize_weights()
@@ -137,39 +123,8 @@ class FusedModel(nn.Module):
         self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), cfg.TEMPORAL_FLATTEN, fuse_early=fuse_type)
 
         if pretrained:
-            path_spatial = os.path.join(cfg.INIT_MODEL_PATH + 'spatial_1', 'spatial_model-100.pkl')
-            self.spatial_model.load_state_dict(torch.load(path_spatial), strict=False)
-
-            path_temporal = os.path.join(cfg.INIT_MODEL_PATH + 'temporal_1', 'spatial_model-5.pkl')
-            self.temporal_model.load_state_dict(torch.load(path_temporal), strict=False)
-
-
+            self.spatial_model.load_state_dict(torch.load(cfg.PRETRAINED_SPATIAL_PATH), strict=False)
+            self.temporal_model.load_state_dict(torch.load(cfg.PRETRAINED_TEMPORAL_PATH), strict=False)
 
         if fuse_type: # for early fusion
             self.fuse = FinalFcLayer(len(cfg.CLASSES))
-
-         ###### asagisi comment
-
-        # if fuse_type == cfg.LATE:
-        #     self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088)
-        #     self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768)
-        #     if pretrained:
-        #         path_spatial = os.path.join(cfg.INIT_MODEL_PATH + 'spatial_1', 'spatial_model-100.pkl')
-        #         self.spatial_model.load_state_dict(path_spatial, strict=False)
-        #
-        #
-        #         self.spatial_model = load_model('spatial', 100)
-        #         self.temporal_model = load_model('temporal', 5)
-        #
-        # else:
-        #     if scratch:
-        #         self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088, fuse_early=1)
-        #         self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768, fuse_early=1)
-        #         self.fuse = FinalFcLayer(len(cfg.CLASSES))
-        #     else:
-        #         self.spatial_model = load_model('spatial', 100)
-        #         self.temporal_model = load_model('temporal', 5)
-        #         self.fuse = FinalFcLayer(len(cfg.CLASSES))
-        #########
-
-

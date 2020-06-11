@@ -1,5 +1,5 @@
 from model import *
-from globals import TRAIN_TRANSFORM, VAL_TRANSFORM, load_dataset, to_var, to_var_labels
+from globals import TRAIN_TRANSFORM, VAL_TRANSFORM, load_dataset, to_var, to_var_labels, load_model
 from dataloader import get_spatial_loader, get_temporal_loader
 import config as cfg
 import torch.nn.functional as F

@@ -23,7 +23,7 @@ def get_data_loaders(train_img_path_list, train_flow_path_list, train_label_list
     return train_data_loader, val_data_loader
 
 
-def train(model_name, scratch):
+def train(model_name, pretrained):
     # load dataset
     train_img_path_list, train_flow_path_list, train_label_list = load_fused_dataset('train')
     val_img_path_list, val_flow_path_list, val_label_list = load_fused_dataset('val')
@@ -43,14 +43,14 @@ def train(model_name, scratch):
 
     if model_name == "late_fusion":
         late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info,
-                                val_loss_info, scratch)
+                                val_loss_info, pretrained)
     else:
         early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info,
-                                 val_loss_info, scratch)
+                                 val_loss_info, pretrained)
 
 
-def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, scratch):
-    model = FusedModel(cfg.LATE, pretrained=1)
+def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, pretrained):
+    model = FusedModel(cfg.LATE, pretrained=pretrained)
 
     # use GPU if available.
     if torch.cuda.is_available():
@@ -117,8 +117,8 @@ def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_
             torch.save(model.state_dict(), os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch))
 
 
-def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, scratch):
-    model = FusedModel(cfg.EARLY, scratch=scratch)
+def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, pretrained):
+    model = FusedModel(cfg.EARLY, pretrained=pretrained)
 
     # use GPU if available.
     if torch.cuda.is_available():

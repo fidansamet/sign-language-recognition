@@ -24,10 +24,9 @@ LOG_STEP = 10  # kac adimda ekrana log bilgisi basilacak.
 NUM_WORKERS = 8  # data loader icin worker sayisi, core sayiniz az ise bunu azaltabilirsiniz.
 LOAD_TRAINED_MODEL = 0  # train asamasinda eski bir model yuklemek isterseniz bunu 1 yapin.
 LOAD_MODEL_NAME = "base_model-100.pkl" # LOAD_TRAINED_MODEL 1 olursa load edilecek model adi.
-
 LATE = 0
 EARLY = 1
-
-
 SPATIAL_FLATTEN = 25088
 TEMPORAL_FLATTEN = 32768
+PRETRAINED_SPATIAL_PATH = "model/spatial_1/spatial_model-100.pkl"
+PRETRAINED_TEMPORAL_PATH = "model/temporal_1/spatial_model-5.pkl"
