@@ -5,6 +5,9 @@ import fused
 import sys
 
 
+SCRATCH = 0
+
+
 if __name__ == '__main__':
     # build dataset
     # download_dataset()
@@ -28,7 +31,7 @@ if __name__ == '__main__':
 
     elif model_name in ["late_fusion", "early_fusion"]:
         if set == "train":
-            fused.train(model_name)
+            fused.train(model_name, SCRATCH)
         elif set == "test":
             fused.run_test(model_name)
         else:

@@ -2,6 +2,7 @@ from torch import nn
 import torchvision.models as models
 import config as cfg
 import torch
+from globals import load_model
 
 
 class BaseModel(nn.Module):
@@ -129,14 +130,23 @@ class FinalFcLayer(nn.Module):
 
 
 class FusedModel(nn.Module):
-    def __init__(self, fuse_type):
+    def __init__(self, fuse_type, scratch=1):
         super(FusedModel, self).__init__()
 
         if fuse_type == cfg.LATE:
-            self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088)
-            self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768)
+            if scratch:
+                self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088)
+                self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768)
+            else:
+                self.spatial_model = load_model('spatial', 100)
+                self.temporal_model = load_model('temporal', 100)
 
         else:
-            self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088, fuse_early=1)
-            self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768, fuse_early=1)
-            self.fuse = FinalFcLayer(len(cfg.CLASSES))
+            if scratch:
+                self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088, fuse_early=1)
+                self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768, fuse_early=1)
+                self.fuse = FinalFcLayer(len(cfg.CLASSES))
+            else:
+                self.spatial_model = load_model('spatial', 100)
+                self.temporal_model = load_model('temporal', 100)
+                self.fuse = FinalFcLayer(len(cfg.CLASSES))

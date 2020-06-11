@@ -7,6 +7,7 @@ TRAIN_JSON_PATH = "../data/MSASL/MSASL_train.json"
 VAL_JSON_PATH = "../data/MSASL/MSASL_val.json"
 TEST_JSON_PATH = "../data/MSASL/MSASL_test.json"
 TRAIN_MODEL_PATH = "model/early_fusion_1"
+INIT_MODEL_PATH = "model/"
 CLASSES = ["hello", "nice", "teacher", "eat", "no", "happy", "like", "orange", "want", "deaf"]
 MIN_RESIZE = 256
 

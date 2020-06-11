@@ -99,19 +99,24 @@ def load_fused_dataset(set_name):
     return img_path_list, flow_path_list, label_list
 
 
-# TODO
-def load_model(epoch):
+def load_model(epoch, model_name):
     # Build models
-    base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES)).eval()  # eval mode (batchnorm uses moving mean/variance)
+    if model_name == 'spatial':
+        base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 25088).eval()  # eval mode (batchnorm uses moving mean/variance)
+    else:
+        base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768).eval()  # eval mode (batchnorm uses moving mean/variance)
 
     # use GPU if available.
     if torch.cuda.is_available():
         base_model.cuda()
 
     # Load the trained model parameters
-    base_model.load_state_dict(torch.load(os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch),
-                                          map_location=lambda storage, loc: storage))
-
+    if model_name == 'spatial':
+        base_model.load_state_dict(torch.load(os.path.join(cfg.INIT_MODEL_PATH + 'spatial', 'spatial_model-%d.pkl' % epoch),
+                                              map_location=lambda storage, loc: storage))
+    else:
+        base_model.load_state_dict(torch.load(os.path.join(cfg.INIT_MODEL_PATH + 'temporal', 'spatial_model-%d.pkl' % epoch),
+                                              map_location=lambda storage, loc: storage))
     return base_model
 
 
