@@ -6,8 +6,7 @@ import config as cfg
 import os
 import json
 
-
-DEVICE = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')     # Check cuda, if cuda gpu, if not cpu
+DEVICE = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')  # Check cuda, if cuda gpu, if not cpu
 
 TRAIN_TRANSFORM = transforms.Compose([
     transforms.Resize((cfg.IM_RESIZE, cfg.IM_RESIZE)),
@@ -40,7 +39,7 @@ def to_var_labels(x, volatile=False):
 
 def load_dataset(set_name, model_name):
     json_path = cfg.MSASL_RGB_PATH + "/%s_%s_rgb.json" % (cfg.DATASET_NAME, set_name)
-    set_path = cfg.MSASL_FLOW_PATH + "/%s" % (set_name)
+    set_path = cfg.MSASL_RGB_PATH + "/%s" % (set_name)
     create_dir(cfg.TRAIN_MODEL_PATH)
     path_list, label_list = [], []
 
@@ -61,6 +60,7 @@ def load_dataset(set_name, model_name):
                     path_list.append(os.path.join(video_path, video_file))
                     label_list.append(video_label)
 
+# TODO
             elif model_name == 'temporal':
                 video_number = video_file.split('.')[0]
                 if int(video_number) < len(video_files) - 10:
@@ -102,9 +102,9 @@ def load_fused_dataset(set_name):
 def load_model(epoch, model_name):
     # Build models
     if model_name == 'spatial':
-        base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 25088).eval()  # eval mode (batchnorm uses moving mean/variance)
+        base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), cfg.SPATIAL_FLATTEN).eval()  # eval mode (batchnorm uses moving mean/variance)
     else:
-        base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768).eval()  # eval mode (batchnorm uses moving mean/variance)
+        base_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), cfg.TEMPORAL_FLATTEN).eval()  # eval mode (batchnorm uses moving mean/variance)
 
     # use GPU if available.
     if torch.cuda.is_available():

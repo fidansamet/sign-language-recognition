@@ -2,7 +2,7 @@ from torch import nn
 import torchvision.models as models
 import config as cfg
 import torch
-from globals import load_model
+import os
 
 
 class BaseModel(nn.Module):
@@ -130,23 +130,46 @@ class FinalFcLayer(nn.Module):
 
 
 class FusedModel(nn.Module):
-    def __init__(self, fuse_type, scratch=1):
+    def __init__(self, fuse_type=0, pretrained=1):
         super(FusedModel, self).__init__()
 
-        if fuse_type == cfg.LATE:
-            if scratch:
-                self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088)
-                self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768)
-            else:
-                self.spatial_model = load_model('spatial', 100)
-                self.temporal_model = load_model('temporal', 100)
+        self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), cfg.SPATIAL_FLATTEN, fuse_early=fuse_type)
+        self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), cfg.TEMPORAL_FLATTEN, fuse_early=fuse_type)
 
-        else:
-            if scratch:
-                self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088, fuse_early=1)
-                self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768, fuse_early=1)
-                self.fuse = FinalFcLayer(len(cfg.CLASSES))
-            else:
-                self.spatial_model = load_model('spatial', 100)
-                self.temporal_model = load_model('temporal', 100)
-                self.fuse = FinalFcLayer(len(cfg.CLASSES))
+        if pretrained:
+            path_spatial = os.path.join(cfg.INIT_MODEL_PATH + 'spatial_1', 'spatial_model-100.pkl')
+            self.spatial_model.load_state_dict(torch.load(path_spatial), strict=False)
+
+            path_temporal = os.path.join(cfg.INIT_MODEL_PATH + 'temporal_1', 'spatial_model-5.pkl')
+            self.temporal_model.load_state_dict(torch.load(path_temporal), strict=False)
+
+
+
+        if fuse_type: # for early fusion
+            self.fuse = FinalFcLayer(len(cfg.CLASSES))
+
+         ###### asagisi comment
+
+        # if fuse_type == cfg.LATE:
+        #     self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088)
+        #     self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768)
+        #     if pretrained:
+        #         path_spatial = os.path.join(cfg.INIT_MODEL_PATH + 'spatial_1', 'spatial_model-100.pkl')
+        #         self.spatial_model.load_state_dict(path_spatial, strict=False)
+        #
+        #
+        #         self.spatial_model = load_model('spatial', 100)
+        #         self.temporal_model = load_model('temporal', 5)
+        #
+        # else:
+        #     if scratch:
+        #         self.spatial_model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), 25088, fuse_early=1)
+        #         self.temporal_model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), 32768, fuse_early=1)
+        #         self.fuse = FinalFcLayer(len(cfg.CLASSES))
+        #     else:
+        #         self.spatial_model = load_model('spatial', 100)
+        #         self.temporal_model = load_model('temporal', 5)
+        #         self.fuse = FinalFcLayer(len(cfg.CLASSES))
+        #########
+
+

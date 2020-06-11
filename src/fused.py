@@ -50,7 +50,7 @@ def train(model_name, scratch):
 
 
 def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, scratch):
-    model = FusedModel(cfg.LATE, scratch=scratch)
+    model = FusedModel(cfg.LATE, pretrained=1)
 
     # use GPU if available.
     if torch.cuda.is_available():

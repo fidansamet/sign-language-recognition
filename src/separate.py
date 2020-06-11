@@ -1,5 +1,5 @@
 from model import *
-from globals import TRAIN_TRANSFORM, VAL_TRANSFORM, load_dataset, to_var, to_var_labels, load_model
+from globals import TRAIN_TRANSFORM, VAL_TRANSFORM, load_dataset, to_var, to_var_labels
 from dataloader import get_spatial_loader, get_temporal_loader
 import config as cfg
 import torch.nn.functional as F
@@ -18,14 +18,14 @@ def get_data_loaders(model_name, train_path_list, train_label_list, val_path_lis
                                                transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
         data_loader_val = get_spatial_loader(val_path_list, val_label_list, 1, shuffle=False,
                                              transform=VAL_TRANSFORM, num_workers=1)
-        model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES))
+        model = BaseModel(cfg.SPATIAL_IN_CHANNEL, len(cfg.CLASSES), cfg.SPATIAL_FLATTEN)
 
     else:   # temporal
         data_loader_train = get_temporal_loader(train_path_list, train_label_list, cfg.BATCH_SIZE, shuffle=True,
                                                 transform=TRAIN_TRANSFORM, num_workers=cfg.NUM_WORKERS)
         data_loader_val = get_temporal_loader(val_path_list, val_label_list, 1, shuffle=False,
                                               transform=VAL_TRANSFORM, num_workers=1)
-        model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES))
+        model = BaseModel(cfg.TEMPORAL_IN_CHANNEL, len(cfg.CLASSES), cfg.TEMPORAL_FLATTEN)
 
     return model, data_loader_train, data_loader_val
 
@@ -154,6 +154,6 @@ def run_test(model_name):
         data_loader_test = get_temporal_loader(test_path_list, test_label_list, 1, shuffle=False,
                                                transform=VAL_TRANSFORM, num_workers=1)
 
-    model = load_model(90)
+    model = load_model(model_name, 90)
     criterion = nn.CrossEntropyLoss()
     test(model, data_loader_test, criterion)
