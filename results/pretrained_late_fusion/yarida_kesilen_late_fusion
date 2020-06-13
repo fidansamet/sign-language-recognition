@@ -1,0 +1,77 @@
+Epoch [5/100], Step [490/498], Spatial Loss: 0.2251062, Temporal Loss: 0.1106062, Running Loss: 0.200184, Combined Loss: 0.3357124
+37.603591160220994
+Accuracy of Spatial = 0.37603591160220995
+
+Epoch [10/100], Step [490/498], Spatial Loss: 0.0205115, Temporal Loss: 0.0912945, Running Loss: 0.101326, Combined Loss: 0.1118060
+35.105893186003684
+Accuracy of Spatial = 0.35105893186003684
+
+Epoch [15/100], Step [490/498], Spatial Loss: 0.1203868, Temporal Loss: 0.0023173, Running Loss: 0.080321, Combined Loss: 0.1227041
+33.644106813996316
+Accuracy of Spatial = 0.33644106813996316
+
+Epoch [20/100], Step [490/498], Spatial Loss: 0.0162687, Temporal Loss: 0.1927648, Running Loss: 0.072419, Combined Loss: 0.2090335
+34.668508287292816
+Accuracy of Spatial = 0.34668508287292815
+
+Epoch [25/100], Step [490/498], Spatial Loss: 0.0788567, Temporal Loss: 0.0689915, Running Loss: 0.063263, Combined Loss: 0.1478482
+33.4829650092081
+Accuracy of Spatial = 0.33482965009208104
+
+Epoch [30/100], Step [490/498], Spatial Loss: 0.0016333, Temporal Loss: 0.0017776, Running Loss: 0.057757, Combined Loss: 0.0034109
+33.35635359116022
+Accuracy of Spatial = 0.3335635359116022
+
+Epoch [35/100], Step [490/498], Spatial Loss: 0.0424025, Temporal Loss: 0.0248911, Running Loss: 0.066914, Combined Loss: 0.0672936
+36.095764272559855
+Accuracy of Spatial = 0.36095764272559855
+
+Epoch [40/100], Step [490/498], Spatial Loss: 0.0752662, Temporal Loss: 0.0703259, Running Loss: 0.047892, Combined Loss: 0.1455922
+33.71316758747698
+Accuracy of Spatial = 0.3371316758747698
+
+Epoch [45/100], Step [490/498], Spatial Loss: 0.0160619, Temporal Loss: 0.0468106, Running Loss: 0.055568, Combined Loss: 0.0628725
+36.95902394106814
+Accuracy of Spatial = 0.3695902394106814
+
+Epoch [50/100], Step [490/498], Spatial Loss: 0.0252890, Temporal Loss: 0.0004064, Running Loss: 0.056325, Combined Loss: 0.0256955
+34.530386740331494
+Accuracy of Spatial = 0.3453038674033149
+
+Epoch [55/100], Step [490/498], Spatial Loss: 0.0238060, Temporal Loss: 0.0015734, Running Loss: 0.055980, Combined Loss: 0.0253794
+28.314917127071823
+Accuracy of Spatial = 0.28314917127071826
+
+Epoch [60/100], Step [490/498], Spatial Loss: 0.0001516, Temporal Loss: 0.0001217, Running Loss: 0.054109, Combined Loss: 0.0002733
+31.261510128913443
+Accuracy of Spatial = 0.31261510128913444
+
+Epoch [65/100], Step [490/498], Spatial Loss: 0.0002169, Temporal Loss: 0.0000082, Running Loss: 0.044087, Combined Loss: 0.0002251
+33.8743093922652
+Accuracy of Spatial = 0.33874309392265195
+
+Epoch [70/100], Step [490/498], Spatial Loss: 0.0047361, Temporal Loss: 0.0013782, Running Loss: 0.027310, Combined Loss: 0.0061143
+32.78084714548803
+Accuracy of Spatial = 0.3278084714548803
+
+Epoch [75/100], Step [490/498], Spatial Loss: 0.0015545, Temporal Loss: 0.0000000, Running Loss: 0.035124, Combined Loss: 0.0015545
+35.71593001841621
+Accuracy of Spatial = 0.3571593001841621
+
+Epoch [80/100], Step [490/498], Spatial Loss: 0.0322201, Temporal Loss: 0.0000444, Running Loss: 0.033601, Combined Loss: 0.0322645
+30.455801104972377
+Accuracy of Spatial = 0.30455801104972374
+
+Epoch [80/100], Step [490/498], Spatial Loss: 0.0322201, Temporal Loss: 0.0000444, Running Loss: 0.033601, Combined Loss: 0.0322645
+30.455801104972377
+Accuracy of Spatial = 0.30455801104972374
+
+Epoch [85/100], Step [490/498], Spatial Loss: 0.0088924, Temporal Loss: 0.0000099, Running Loss: 0.051759, Combined Loss: 0.0089023
+31.45718232044199
+Accuracy of Spatial = 0.3145718232044199
+
+
+Epoch [90/100], Step [490/498], Spatial Loss: 0.0033123, Temporal Loss: 0.0000022, Running Loss: 0.027232, Combined Loss: 0.0033145
+34.127532228360955
+Accuracy of Spatial = 0.3412753222836096
+

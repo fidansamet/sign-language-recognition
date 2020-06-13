@@ -265,7 +265,7 @@ def early_fusion_test(model, data_loader):
     return test_acc
 
 
-def run_test(model_name):
+def run_test(model_name, pretrained):
     set_name = 'test'
     img_path_list, flow_path_list, label_list = load_fused_dataset(set_name)
 
@@ -273,7 +273,7 @@ def run_test(model_name):
     data_loader = get_fused_loader(img_path_list, flow_path_list, label_list, 1, shuffle=False,
                                    transform=VAL_TRANSFORM, num_workers=1)
 
-    model = load_fusion_model(model_name, 100)
+    model = load_fusion_model(model_name, 75, pretrained)
 
     if model_name == 'late_fusion':
         late_fusion_test(model, data_loader)

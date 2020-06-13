@@ -31,7 +31,7 @@ if __name__ == '__main__':
         if set == "train":
             fused.train(model_name, PRETRAINED)
         elif set == "test":
-            fused.run_test(model_name)
+            fused.run_test(model_name, PRETRAINED)
         else:
             print("Please enter one of the followings to run: train, test")
             sys.exit()

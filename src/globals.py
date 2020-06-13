@@ -124,12 +124,12 @@ def load_model(epoch, model_name):
     return base_model
 
 
-def load_fusion_model(model_name, epoch):
+def load_fusion_model(model_name, epoch, pretrained):
     # Build models
     if model_name == 'late_fusion':
-        base_model = FusedModel(cfg.LATE).eval()  # eval mode (batchnorm uses moving mean/variance)
+        base_model = FusedModel(cfg.LATE, pretrained=pretrained).eval()  # eval mode (batchnorm uses moving mean/variance)
     else:
-        base_model = FusedModel(cfg.EARLY).eval()  # eval mode (batchnorm uses moving mean/variance)
+        base_model = FusedModel(cfg.EARLY, pretrained=pretrained).eval()  # eval mode (batchnorm uses moving mean/variance)
 
     # use GPU if available.
     if torch.cuda.is_available():
