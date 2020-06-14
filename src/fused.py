@@ -65,6 +65,14 @@ def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_
     # train the model
     total_step = len(train_data_loader)
 
+    test_acc, test_loss = late_fusion_test(model, val_data_loader, criterion)
+    val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f,  Val Accuracy: %.3f \n'
+                        % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
+
+    test_acc, test_loss = late_fusion_test(model, train_data_loader, criterion)
+    train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
+                              % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
+
     for epoch in range(1, cfg.EPOCH_COUNT + 1):
         for i, (images, flows, labels) in enumerate(train_data_loader):
             # Set mini-batch images
@@ -130,9 +138,17 @@ def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss
         model.cuda()
 
     optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(model.parameters())),  lr=cfg.LEARNING_RATE)
-
     # train the model
     total_step = len(train_data_loader)
+
+    test_acc, test_loss = early_fusion_test(model, val_data_loader, criterion)
+    val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f, Val Accuracy: %.3f \n'
+                        % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
+
+    test_acc, test_loss = early_fusion_test(model, train_data_loader, criterion)
+    train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
+                              % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
+
 
     for epoch in range(1, cfg.EPOCH_COUNT + 1):
         for i, (images, flows, labels) in enumerate(train_data_loader):
@@ -227,14 +243,16 @@ def late_fusion_test(model, data_loader, criterion):
                 predicteds.append(j[0])
 
     test_loss /= len(data_loader)
-    test_acc = 100. * correct / len(data_loader)
-    print(test_acc)
+
+    print(test_loss)
 
     score = metrics.accuracy_score(ground_truths, predicteds)
     cls_report = metrics.classification_report(ground_truths, predicteds)
     conf_mat = metrics.confusion_matrix(ground_truths, predicteds)
     print("Accuracy of Spatial = " + str(score))
-    print(score * 100.0)
+    test_acc = score * 100.0
+    print(test_acc)
+
     print(cls_report)
     print(conf_mat)
 
@@ -275,13 +293,16 @@ def early_fusion_test(model, data_loader, criterion):
                 predicteds.append(j[0])
 
     test_loss /= len(data_loader)
-    test_acc = 100. * correct / len(data_loader)
-    print(test_acc)
+    # test_acc = 100. * correct / len(data_loader)
+    # print(test_acc)
+    print(test_loss)
 
     score = metrics.accuracy_score(ground_truths, predicteds)
     cls_report = metrics.classification_report(ground_truths, predicteds)
     conf_mat = metrics.confusion_matrix(ground_truths, predicteds)
     print("Accuracy of Spatial = " + str(score))
+    test_acc = score * 100.0
+    print(test_acc)
     print(cls_report)
     print(conf_mat)
 
@@ -295,10 +316,35 @@ def run_test(model_name, pretrained):
     # build data loader
     data_loader = get_fused_loader(img_path_list, flow_path_list, label_list, 1, shuffle=False,
                                    transform=VAL_TRANSFORM, num_workers=1)
+    criterion = nn.CrossEntropyLoss()
 
-    model = load_fusion_model(model_name, 75, pretrained)
+    model = load_fusion_model(model_name, 20, pretrained)
 
     if model_name == 'late_fusion':
-        late_fusion_test(model, data_loader)
+        late_fusion_test(model, data_loader, criterion)
     else:
-        early_fusion_test(model, data_loader)
+        early_fusion_test(model, data_loader, criterion)
+
+    # for model_name in ["late_fusion", "early_fusion"]:
+    #     for set_name in ["train", "test"]:
+    #
+    #         img_path_list, flow_path_list, label_list = load_fused_dataset(set_name)
+    #
+    #         # build data loader
+    #         data_loader = get_fused_loader(img_path_list, flow_path_list, label_list, 1, shuffle=False,
+    #                                        transform=VAL_TRANSFORM, num_workers=1)
+    #
+    #         info = open(cfg.TRAIN_MODEL_PATH + '/' + model_name + "_" + set_name + '.txt', 'w')
+    #
+    #         for i in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]:
+    #             criterion = nn.CrossEntropyLoss()
+    #
+    #             model = load_fusion_model(model_name, i, pretrained, "model/pretrained_" + model_name + "_1")
+    #
+    #             if model_name == 'late_fusion':
+    #                 test_acc, test_loss = late_fusion_test(model, data_loader, criterion)
+    #             else:
+    #                 test_acc, test_loss = early_fusion_test(model, data_loader, criterion)
+    #
+    #             info.write('Loss: %.7f, Accuracy: %.3f \n'
+    #                                 % (test_loss, test_acc))

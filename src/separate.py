@@ -39,6 +39,7 @@ def train(model_name):
     today = datetime.datetime.now()
     train_loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_train_' + str(today) + '.txt', 'w')
     val_loss_info = open(cfg.TRAIN_MODEL_PATH + '/loss_val_' + str(today) + '.txt', 'w')
+    train_acc_loss_info = open(cfg.TRAIN_MODEL_PATH + '/train_acc_loss_' + str(today) + '.txt', 'w')
 
     # get dataloaders
     model, data_loader_train, data_loader_val = get_data_loaders(model_name, train_path_list, train_label_list, val_path_list, val_label_list)
@@ -54,6 +55,15 @@ def train(model_name):
 
     # train the model
     total_step = len(data_loader_train)
+
+    test_acc, test_loss = test(model, data_loader_val, criterion)
+    val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f,  Val Accuracy: %.3f \n'
+                        % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
+
+    test_acc, test_loss = test(model, data_loader_train, criterion)
+    train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
+                              % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
+
     for epoch in range(1, cfg.EPOCH_COUNT + 1):
         for i, (images, labels) in enumerate(data_loader_train):
             # Set mini-batch dataset
@@ -88,6 +98,10 @@ def train(model_name):
             val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f, Val Accuracy: %.3f \n'
                                 % (epoch, cfg.EPOCH_COUNT, i, total_step,
                                    test_loss, test_acc))
+
+            test_acc, test_loss = test(model, data_loader_train, criterion)
+            train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
+                                      % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
 
             torch.save(model.state_dict(),
                        os.path.join(cfg.TRAIN_MODEL_PATH,
@@ -144,7 +158,7 @@ def test(model, validation_loader, criterion):
 
 
 def run_test(model_name):
-    set_name = 'train'
+    set_name = 'test'
     test_path_list, test_label_list = load_dataset(set_name, model_name)
 
     # build data loader
@@ -156,6 +170,6 @@ def run_test(model_name):
         data_loader_test = get_temporal_loader(test_path_list, test_label_list, 1, shuffle=False,
                                                transform=VAL_TRANSFORM, num_workers=1)
 
-    model = load_model(90, model_name)
+    model = load_model(10, model_name)
     criterion = nn.CrossEntropyLoss()
     test(model, data_loader_test, criterion)

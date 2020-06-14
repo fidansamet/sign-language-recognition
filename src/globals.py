@@ -116,10 +116,10 @@ def load_model(epoch, model_name):
 
     # Load the trained model parameters
     if model_name == 'spatial':
-        base_model.load_state_dict(torch.load(os.path.join(cfg.INIT_MODEL_PATH + 'spatial_1', 'spatial_model-%d.pkl' % epoch),
+        base_model.load_state_dict(torch.load(os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch),
                                               map_location=lambda storage, loc: storage))
     else:
-        base_model.load_state_dict(torch.load(os.path.join(cfg.INIT_MODEL_PATH + 'temporal_1', 'spatial_model-%d.pkl' % epoch),
+        base_model.load_state_dict(torch.load(os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch),
                                               map_location=lambda storage, loc: storage))
     return base_model
 
