@@ -4,7 +4,7 @@ import separate
 import fused
 import sys
 
-PRETRAINED = 1
+PRETRAINED = 0
 
 if __name__ == '__main__':
     # build dataset

@@ -1,0 +1,5 @@
+Epoch [5/25], Step [497/498], Train Loss: 1.5159569, Train Accuracy: 96.41678453559641
+Epoch [10/25], Step [497/498], Train Loss: 1.4775403, Train Accuracy: 98.7018701870187
+Epoch [15/25], Step [497/498], Train Loss: 1.4740297, Train Accuracy: 99.00361464717901
+Epoch [20/25], Step [497/498], Train Loss: 1.4707870, Train Accuracy: 99.22677982083923
+Epoch [25/25], Step [497/498], Train Loss: 1.4676552, Train Accuracy: 99.5002357378595

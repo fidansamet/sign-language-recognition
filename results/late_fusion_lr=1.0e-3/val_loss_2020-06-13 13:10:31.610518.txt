@@ -1,0 +1,10 @@
+Epoch [5/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [10/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [15/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [20/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [25/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [30/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [35/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [40/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [45/50], Step [497/498], Val Accuracy: 3.614 
+Epoch [50/50], Step [497/498], Val Accuracy: 3.614 

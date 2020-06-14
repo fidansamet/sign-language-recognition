@@ -138,11 +138,13 @@ def test(model, validation_loader, criterion):
     print(cls_report)
     print(conf_mat)
 
+    print("Loss = " + str(test_loss))
+
     return test_acc, test_loss
 
 
 def run_test(model_name):
-    set_name = 'test'
+    set_name = 'train'
     test_path_list, test_label_list = load_dataset(set_name, model_name)
 
     # build data loader
@@ -154,6 +156,6 @@ def run_test(model_name):
         data_loader_test = get_temporal_loader(test_path_list, test_label_list, 1, shuffle=False,
                                                transform=VAL_TRANSFORM, num_workers=1)
 
-    model = load_model(model_name, 90)
+    model = load_model(90, model_name)
     criterion = nn.CrossEntropyLoss()
     test(model, data_loader_test, criterion)

@@ -1,0 +1,5 @@
+Epoch [5/25], Step [497/498], Val Loss: 2.1019997, Val Accuracy: 35.129 
+Epoch [10/25], Step [497/498], Val Loss: 2.1100795, Val Accuracy: 33.978 
+Epoch [15/25], Step [497/498], Val Loss: 2.0931644, Val Accuracy: 35.785 
+Epoch [20/25], Step [497/498], Val Loss: 2.0751892, Val Accuracy: 37.707 
+Epoch [25/25], Step [497/498], Val Loss: 2.0820090, Val Accuracy: 37.155 

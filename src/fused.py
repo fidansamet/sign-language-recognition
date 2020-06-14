@@ -32,6 +32,7 @@ def train(model_name, pretrained):
     today = datetime.datetime.now()
     train_loss_info = open(cfg.TRAIN_MODEL_PATH + '/train_loss_' + str(today) + '.txt', 'w')
     val_loss_info = open(cfg.TRAIN_MODEL_PATH + '/val_loss_' + str(today) + '.txt', 'w')
+    train_acc_loss_info = open(cfg.TRAIN_MODEL_PATH + '/train_acc_loss_' + str(today) + '.txt', 'w')
 
     # get dataloaders
     train_data_loader, val_data_loader = get_data_loaders(train_img_path_list, train_flow_path_list,
@@ -43,13 +44,13 @@ def train(model_name, pretrained):
 
     if model_name == "late_fusion":
         late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info,
-                                val_loss_info, pretrained)
+                                val_loss_info, train_acc_loss_info, pretrained)
     else:
         early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info,
-                                 val_loss_info, pretrained)
+                                 val_loss_info, train_acc_loss_info, pretrained)
 
 
-def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, pretrained):
+def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, train_acc_loss_info, pretrained):
     model = FusedModel(cfg.LATE, pretrained=pretrained)
 
     # use GPU if available.
@@ -110,14 +111,18 @@ def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_
         # Save the models
         if epoch % cfg.SAVE_PERIOD_IN_EPOCHS == 0:
             # run test on val set
-            test_acc = late_fusion_test(model, val_data_loader)
-            val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Accuracy: %.3f \n'
-                                % (epoch, cfg.EPOCH_COUNT, i, total_step, test_acc))
+            test_acc, test_loss = late_fusion_test(model, val_data_loader, criterion)
+            val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f,  Val Accuracy: %.3f \n'
+                                % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
+
+            test_acc, test_loss = late_fusion_test(model, train_data_loader, criterion)
+            train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
+                                      % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
 
             torch.save(model.state_dict(), os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch))
 
 
-def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, pretrained):
+def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, train_acc_loss_info, pretrained):
     model = FusedModel(cfg.EARLY, pretrained=pretrained)
 
     # use GPU if available.
@@ -173,14 +178,19 @@ def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss
         # Save the models
         if epoch % cfg.SAVE_PERIOD_IN_EPOCHS == 0:
             # run test on val set
-            test_acc = early_fusion_test(model, val_data_loader)
-            val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Accuracy: %.3f \n'
-                                % (epoch, cfg.EPOCH_COUNT, i, total_step, test_acc))
+            test_acc, test_loss = early_fusion_test(model, val_data_loader, criterion)
+            val_loss_info.write('Epoch [%d/%d], Step [%d/%d], Val Loss: %.7f, Val Accuracy: %.3f \n'
+                                % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
+
+            test_acc, test_loss = early_fusion_test(model, train_data_loader, criterion)
+            train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
+                                % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
 
             torch.save(model.state_dict(), os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch))
 
 
-def late_fusion_test(model, data_loader):
+def late_fusion_test(model, data_loader, criterion):
+    test_loss = 0,
     correct = 0
     ground_truths, predicteds = [], []
     model.eval()
@@ -200,6 +210,12 @@ def late_fusion_test(model, data_loader):
             s_predicted_labels = model.spatial_model(images)
             t_predicted_labels = model.temporal_model(flows)
 
+            s_loss = criterion(s_predicted_labels, labels)
+            t_loss = criterion(t_predicted_labels, labels)
+
+            combined_loss = s_loss + t_loss
+            test_loss += combined_loss.cpu().data.numpy()  # sum up batch loss
+
             s_outputs = F.softmax(s_predicted_labels)
             t_outputs = F.softmax(t_predicted_labels)
             outputs = (s_outputs + t_outputs) / 2.0
@@ -210,6 +226,7 @@ def late_fusion_test(model, data_loader):
             for j in pred.tolist():
                 predicteds.append(j[0])
 
+    test_loss /= len(data_loader)
     test_acc = 100. * correct / len(data_loader)
     print(test_acc)
 
@@ -217,13 +234,15 @@ def late_fusion_test(model, data_loader):
     cls_report = metrics.classification_report(ground_truths, predicteds)
     conf_mat = metrics.confusion_matrix(ground_truths, predicteds)
     print("Accuracy of Spatial = " + str(score))
+    print(score * 100.0)
     print(cls_report)
     print(conf_mat)
 
-    return test_acc
+    return test_acc, test_loss
 
 
-def early_fusion_test(model, data_loader):
+def early_fusion_test(model, data_loader, criterion):
+    test_loss = 0,
     correct = 0
     ground_truths, predicteds = [], []
     model.eval()
@@ -246,12 +265,16 @@ def early_fusion_test(model, data_loader):
 
             outputs = F.softmax(final_logit)
 
+            loss = criterion(outputs, labels)
+            test_loss += loss.cpu().data.numpy()  # sum up batch loss
+
             pred = outputs.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(labels.view_as(pred)).sum().item()
 
             for j in pred.tolist():
                 predicteds.append(j[0])
 
+    test_loss /= len(data_loader)
     test_acc = 100. * correct / len(data_loader)
     print(test_acc)
 
@@ -262,7 +285,7 @@ def early_fusion_test(model, data_loader):
     print(cls_report)
     print(conf_mat)
 
-    return test_acc
+    return test_acc, test_loss
 
 
 def run_test(model_name, pretrained):

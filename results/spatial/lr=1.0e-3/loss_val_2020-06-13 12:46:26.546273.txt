@@ -1,0 +1,10 @@
+Epoch [5/50], Step [115/116], Val Loss: 2.3033717, Val Accuracy: 3.825 
+Epoch [10/50], Step [115/116], Val Loss: 2.3031276, Val Accuracy: 3.825 
+Epoch [15/50], Step [115/116], Val Loss: 2.3031653, Val Accuracy: 3.825 
+Epoch [20/50], Step [115/116], Val Loss: 2.3028608, Val Accuracy: 3.825 
+Epoch [25/50], Step [115/116], Val Loss: 2.3035650, Val Accuracy: 3.825 
+Epoch [30/50], Step [115/116], Val Loss: 2.3033699, Val Accuracy: 3.825 
+Epoch [35/50], Step [115/116], Val Loss: 2.3032827, Val Accuracy: 3.825 
+Epoch [40/50], Step [115/116], Val Loss: 2.3033224, Val Accuracy: 3.825 
+Epoch [45/50], Step [115/116], Val Loss: 2.3033841, Val Accuracy: 3.825 
+Epoch [50/50], Step [115/116], Val Loss: 2.3035911, Val Accuracy: 3.825 

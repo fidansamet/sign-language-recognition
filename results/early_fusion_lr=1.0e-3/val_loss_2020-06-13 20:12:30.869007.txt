@@ -1,0 +1,2 @@
+Epoch [5/25], Step [497/498], Val Accuracy: 9.979 
+Epoch [10/25], Step [497/498], Val Accuracy: 3.614 

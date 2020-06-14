@@ -1,0 +1,14 @@
+Epoch [5/100], Step [497/498], Val Loss: 2.3031947, Val Accuracy: 9.979 
+Epoch [10/100], Step [497/498], Val Loss: 2.3033950, Val Accuracy: 3.614 
+Epoch [15/100], Step [497/498], Val Loss: 2.3035103, Val Accuracy: 3.614 
+Epoch [20/100], Step [497/498], Val Loss: 2.3033251, Val Accuracy: 3.614 
+Epoch [25/100], Step [497/498], Val Loss: 2.3029529, Val Accuracy: 3.614 
+Epoch [30/100], Step [497/498], Val Loss: 2.3031315, Val Accuracy: 3.614 
+Epoch [35/100], Step [497/498], Val Loss: 2.3032242, Val Accuracy: 3.614 
+Epoch [40/100], Step [497/498], Val Loss: 2.3032552, Val Accuracy: 3.614 
+Epoch [45/100], Step [497/498], Val Loss: 2.3032499, Val Accuracy: 3.614 
+Epoch [50/100], Step [497/498], Val Loss: 2.3031874, Val Accuracy: 3.614 
+Epoch [55/100], Step [497/498], Val Loss: 2.3031020, Val Accuracy: 3.614 
+Epoch [60/100], Step [497/498], Val Loss: 2.3031591, Val Accuracy: 3.614 
+Epoch [65/100], Step [497/498], Val Loss: 2.3032053, Val Accuracy: 3.614 
+Epoch [70/100], Step [497/498], Val Loss: 2.3031251, Val Accuracy: 3.614 
