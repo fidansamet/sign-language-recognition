@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     for i in ["late_fusion", "early_fusion"]:
         model_name = i
-        cfg.TRAIN_MODEL_PATH = "model/" + model_name + "_128"
+        cfg.TRAIN_MODEL_PATH = "model/" + model_name + "_sgd"
 
         if model_name in ["spatial", "temporal"]:
             if set == "train":

@@ -57,9 +57,9 @@ def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_
     if torch.cuda.is_available():
         model.cuda()
 
-    s_optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(model.spatial_model.parameters())),
+    s_optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.spatial_model.parameters())),
                                    lr=cfg.LEARNING_RATE)
-    t_optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(model.temporal_model.parameters())),
+    t_optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.temporal_model.parameters())),
                                    lr=cfg.LEARNING_RATE)
 
     # train the model
@@ -137,7 +137,7 @@ def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss
     if torch.cuda.is_available():
         model.cuda()
 
-    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(model.parameters())),  lr=cfg.LEARNING_RATE)
+    optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.parameters())),  lr=cfg.LEARNING_RATE)
     # train the model
     total_step = len(train_data_loader)
 
