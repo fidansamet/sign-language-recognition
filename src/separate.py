@@ -170,6 +170,6 @@ def run_test(model_name):
         data_loader_test = get_temporal_loader(test_path_list, test_label_list, 1, shuffle=False,
                                                transform=VAL_TRANSFORM, num_workers=1)
 
-    model = load_model(10, model_name)
+    model = load_model(20, model_name)
     criterion = nn.CrossEntropyLoss()
     test(model, data_loader_test, criterion)

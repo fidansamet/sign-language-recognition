@@ -36,7 +36,7 @@ def train(model_name, pretrained):
 
     # get dataloaders
     train_data_loader, val_data_loader = get_data_loaders(train_img_path_list, train_flow_path_list,
-                                                         train_label_list, val_img_path_list,
+                                                          train_label_list, val_img_path_list,
                                                           val_flow_path_list, val_label_list)
 
     criterion = nn.CrossEntropyLoss()
@@ -50,7 +50,8 @@ def train(model_name, pretrained):
                                  val_loss_info, train_acc_loss_info, pretrained)
 
 
-def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, train_acc_loss_info, pretrained):
+def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info,
+                            train_acc_loss_info, pretrained):
     model = FusedModel(cfg.LATE, pretrained=pretrained)
 
     # use GPU if available.
@@ -58,9 +59,9 @@ def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_
         model.cuda()
 
     s_optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.spatial_model.parameters())),
-                                   lr=cfg.LEARNING_RATE)
+                                  lr=cfg.LEARNING_RATE)
     t_optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.temporal_model.parameters())),
-                                   lr=cfg.LEARNING_RATE)
+                                  lr=cfg.LEARNING_RATE)
 
     # train the model
     total_step = len(train_data_loader)
@@ -130,14 +131,15 @@ def late_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_
             torch.save(model.state_dict(), os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch))
 
 
-def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info, train_acc_loss_info, pretrained):
+def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss_hist, train_loss_info, val_loss_info,
+                             train_acc_loss_info, pretrained):
     model = FusedModel(cfg.EARLY, pretrained=pretrained)
 
     # use GPU if available.
     if torch.cuda.is_available():
         model.cuda()
 
-    optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.parameters())),  lr=cfg.LEARNING_RATE)
+    optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.parameters())), lr=cfg.LEARNING_RATE)
     # train the model
     total_step = len(train_data_loader)
 
@@ -148,7 +150,6 @@ def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss
     test_acc, test_loss = early_fusion_test(model, train_data_loader, criterion)
     train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
                               % (0, cfg.EPOCH_COUNT, 0, total_step, test_loss, test_acc))
-
 
     for epoch in range(1, cfg.EPOCH_COUNT + 1):
         for i, (images, flows, labels) in enumerate(train_data_loader):
@@ -200,7 +201,7 @@ def early_fusion_train_epoch(train_data_loader, val_data_loader, criterion, loss
 
             test_acc, test_loss = early_fusion_test(model, train_data_loader, criterion)
             train_acc_loss_info.write('Epoch [%d/%d], Step [%d/%d], Train Loss: %.7f, Train Accuracy: %.3f \n'
-                                % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
+                                      % (epoch, cfg.EPOCH_COUNT, i, total_step, test_loss, test_acc))
 
             torch.save(model.state_dict(), os.path.join(cfg.TRAIN_MODEL_PATH, 'spatial_model-%d.pkl' % epoch))
 
@@ -318,7 +319,7 @@ def run_test(model_name, pretrained):
                                    transform=VAL_TRANSFORM, num_workers=1)
     criterion = nn.CrossEntropyLoss()
 
-    model = load_fusion_model(model_name, 20, pretrained)
+    model = load_fusion_model(model_name, 15, pretrained)
 
     if model_name == 'late_fusion':
         late_fusion_test(model, data_loader, criterion)
