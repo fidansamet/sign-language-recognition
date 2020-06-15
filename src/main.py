@@ -3,7 +3,6 @@ from dataset.download import download_dataset
 import separate
 import fused
 import sys
-import config as cfg
 
 PRETRAINED = 0
 

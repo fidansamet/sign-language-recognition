@@ -16,17 +16,15 @@ SPATIAL_IN_CHANNEL = 3
 TEMPORAL_IN_CHANNEL = 20
 IM_RESIZE = 256
 IM_CROP = 224
-LEARNING_RATE = 2.5e-5     #  ogrenme orani, eger loss azalmazsa bunu e-5 ya da e-6 ya dusurebilirsiniz.
-BATCH_SIZE = 64          #   her seferde kac adet resmi isleyecek model. eger train i calistirirken memory hatasi alirsaniz bunu azaltmaniz lazim.
-EPOCH_COUNT = 20       #     tum veri kumesi uzerinden kac kez gecilecek. baktiniz loss cok dusmemeye basladiysa 40-50 epoch sonra train i durdurabilirsiniz.
-SAVE_PERIOD_IN_EPOCHS = 5  # kac epoch da save edilecek model.
-LOG_STEP = 10  # kac adimda ekrana log bilgisi basilacak.
-NUM_WORKERS = 8  # data loader icin worker sayisi, core sayiniz az ise bunu azaltabilirsiniz.
-LOAD_TRAINED_MODEL = 0  # train asamasinda eski bir model yuklemek isterseniz bunu 1 yapin.
-LOAD_MODEL_NAME = "base_model-100.pkl" # LOAD_TRAINED_MODEL 1 olursa load edilecek model adi.
+LEARNING_RATE = 2.5e-5
+BATCH_SIZE = 64
+EPOCH_COUNT = 20
+SAVE_PERIOD_IN_EPOCHS = 5
+LOG_STEP = 10
+NUM_WORKERS = 8
 LATE = 0
 EARLY = 1
 SPATIAL_FLATTEN = 25088
 TEMPORAL_FLATTEN = 32768
-PRETRAINED_SPATIAL_PATH = "model/spatial_lr=1.0e-3/spatial_model-5.pkl"
-PRETRAINED_TEMPORAL_PATH = "model/temporal_lr=1.0e-3/spatial_model-5.pkl"
+PRETRAINED_SPATIAL_PATH = "model/spatial_lr=1.0e-3/model-5.pkl"
+PRETRAINED_TEMPORAL_PATH = "model/temporal_lr=1.0e-3/model-5.pkl"

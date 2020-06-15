@@ -129,7 +129,6 @@ class FusionDataset(data.Dataset):
     def __len__(self):
         return len(self.flow_name_list)
 
-    # TODO center crop
     def crop_center(self, arr, cropx, cropy):
         y, x, z = arr.shape
         startx = x // 2 - (cropx // 2)

@@ -49,7 +49,7 @@ def train(model_name):
         model.cuda()
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(filter(lambda x: x.requires_grad, list(model.parameters())), lr=cfg.LEARNING_RATE)
+    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, list(model.parameters())), lr=cfg.LEARNING_RATE)
 
     loss_hist = collections.deque(maxlen=500)
 
